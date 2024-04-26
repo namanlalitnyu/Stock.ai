@@ -22,7 +22,7 @@ export const LLM_MODES = {
   styleUrl: './app.component.scss'
 })
 export class AppComponent {
-  public title: string = "LENR.ai";
+  public title: string = "Stock.Ai";
   public streamText: string = "";
   public promptText: string = "";
   public llmModes: any = LLM_MODES;
@@ -82,7 +82,7 @@ export class AppComponent {
             console.error("Error from DB call", err);
             this.isFetchingDocs = false;
             this.hasError = true;
-            this.errorMessage = "Error in fetching LENR domain documents";
+            this.errorMessage = "Error in fetching documents";
           }
         });
     }

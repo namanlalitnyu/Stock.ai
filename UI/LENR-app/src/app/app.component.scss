@@ -1,6 +1,7 @@
 .body-content {
     display: flex;
     flex-direction: column;
+    background:blue($color: #000000);
 }
 
 .header {
@@ -8,7 +9,7 @@
     align-items: center;
     justify-content: space-between;
     padding: 1em;
-    background: var(--bs-body-color);
+    background: #ffc107;//var(--bs-body-color);
 }
 
 .mode-dropdown {
@@ -42,7 +43,7 @@
 }
 
 .content-box {
-    min-height: 70vh;
+    min-height: 30vh;
     width: 50vw;
     border-radius: 5px;
 }
@@ -171,3 +172,108 @@
     background: var(--bs-danger-text-emphasis);
     color: var(--bs-danger-border-subtle);
 }
+
+
+/* Container for toggle switches */
+.toggle-container {
+    display: flex;
+    align-items: center;
+    justify-content: center; /* This will align the children (toggles) to the right */
+    width: 100%;
+  }
+  
+  /* Styling for the switch */
+  .toggle-switch {
+    position: relative;
+    display: inline-block;
+    width: 80px;
+    height: 34px;
+    margin: 0 10px;
+  }
+  
+  /* The sliding part */
+  .toggle-slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-color: #ccc;
+    transition: 0.4s;
+    border-radius: 34px;
+  }
+  
+  .toggle-slider:before {
+    position: absolute;
+    content: '';
+    height: 26px;
+    width: 26px;
+    left: 4px;
+    bottom: 4px;
+    background-color: white;
+    transition: 0.4s;
+    border-radius: 50%;
+  }
+  
+  /* Hide default radio button */
+  .toggle-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+  }
+  
+  /* Move the slider to the right on check */
+  .toggle-switch input:checked + label + .toggle-slider {
+    background-color: #2196F3;
+  }
+  
+  .toggle-switch input:checked + label + .toggle-slider:before {
+    transform: translateX(46px);
+  }
+  
+  /* Label styling */
+  .toggle-switch label {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    text-align: center;
+    line-height: 34px;
+    color: #fff;
+    user-select: none;
+    z-index: 2;
+  }
+
+
+.toggle-switch {
+  position: relative;
+  display: flex;
+  flex-direction: column; /* stack elements vertically */
+  align-items: center; /* center elements horizontally */
+  width: 80px;
+  margin: 0 10px;
+}
+
+.toggle-switch label {
+  position: relative; /* changed from absolute to relative */
+  width: 100%;
+  text-align: center;
+  color:#ffc107;
+  user-select: none;
+  padding-top: 40px; /* adjust as needed to create space between the slider and label */
+  z-index: 2;
+}
+
+/* Additional styles for the slider to ensure it's positioned at the top */
+.toggle-slider {
+  /* ... existing styles ... */
+  order: -1; /* ensures that the slider is always above the label */
+}
+
+.interaction{
+    color: #ffc107;
+}
+
+
+  
+  /* Tooltip styling */
