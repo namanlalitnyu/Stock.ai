@@ -1,0 +1,24 @@
+/* You can add global styles to this file, and also import other style files */
+
+/* Importing Bootstrap SCSS file. */
+@import 'bootstrap/scss/bootstrap';
+
+body {
+    background-color: #32323E;
+    color: #fff;
+}
+
+input, textarea {
+    background: #32323E !important;
+    border-color: #00FFDD !important;
+    color: #fff !important;
+}
+
+textarea::placeholder {
+    color: var(--bs-gray-500) !important;
+    opacity: 1 !important; /* Firefox */
+}
+  
+textarea::-ms-input-placeholder { /* Edge 12 -18 */
+    color: var(--bs-gray-500) !important;
+  }
