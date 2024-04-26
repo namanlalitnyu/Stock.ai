@@ -1,0 +1,139 @@
+<div class="body-content">
+  <span class="header">
+    <span class="title display-4">{{ title }}</span>
+    <!-- <span class="mode-dropdown">
+      <span class="lead">Current Mode: </span>
+      <div ngbDropdown class="d-inline-block">
+        <button type="button" class="btn btn-outline-secondary" id="llm-mode" ngbDropdownToggle>
+          {{selectedMode}}
+        </button>
+        <div ngbDropdownMenu aria-labelledby="llm-mode" class="dropdown-menu dropdown-menu-dark">
+          <button ngbDropdownItem *ngFor="let mode of llmModes | keyvalue"
+            (click)="changeMode(mode.key)">{{mode.value}}</button>
+        </div>
+      </div>
+    </span> -->
+  </span>
+
+
+  
+  <div class="solution">
+    <!-- <div class="initialize content-box" *ngIf="isPristine">
+      <span class="display-5">How can I help you today?</span>
+    </div> -->
+
+<br>
+    <div class="toggle-container">
+      <span class="lead interaction">Interaction Style:</span>
+      <div class="toggle-switch">
+        <input type="radio" id="modeQA"  name="mode" (change)="changeMode('qa')" [checked]="selectedMode === 'Question Answering'">
+        <label for="modeQA">QA</label>
+        <div class="toggle-slider"></div>
+      </div>
+      <div class="toggle-switch ">
+        <input type="radio" id="modeRaw" name="mode" (change)="changeMode('rawLLM')" [checked]="selectedMode === 'Raw LLM'">
+        <label for="modeRaw" >LLM</label>
+        <div class="toggle-slider"></div>
+      </div>
+      <div class="toggle-switch">
+        <input type="radio" id="modeRec"  name="mode" (change)="changeMode('recommendation')" [checked]="selectedMode === 'Recommendation System'">
+        <label for="modeRec">Recommendation</label>
+        <div class="toggle-slider"></div>
+      </div>
+    </div>
+    
+    <br>
+    <br>
+
+    <div class="prompt">
+      <textarea class="form-control prompt-input" placeholder="Enter prompt" [disabled]="isInTranstion"
+        [(ngModel)]="promptText" rows="1" (keydown.enter)="getAnswer()"></textarea>
+  
+      <span class="btn-span">
+        <button class="btn btn-secondary submit-btn" type="button" (click)="getAnswer()" [disabled]="isInTranstion">
+          <span *ngIf="!isInTranstion" class="button-content">
+            <i class="fa-solid fa-arrow-up-long"></i>
+          </span>
+          <span *ngIf="isInTranstion" class="button-content">
+            <i class="fa-solid fa-spinner fa-spin-pulse"></i>
+          </span>
+        </button>
+      </span> 
+    </div>
+
+    <div class="error content-box" *ngIf="hasError">
+      <div class="alert alert-danger" role="alert">
+        <i class="bi bi-exclamation-triangle-fill"></i>
+        <span>{{errorMessage}}</span>
+      </div>
+    </div>
+
+    <div class="loader content-box" *ngIf="isInTranstion">
+      <div class="load-content" *ngIf="isFetchingDocs">
+        <span class="display-6 text-warning">Fetching Relevant Documents...</span>
+        <span class="spinner-border text-warning" role="status"></span>
+      </div>
+
+      <div class="load-content" *ngIf="isLoading">
+        <span class="display-6 text-warning">Generating Response...</span>
+        <span class="spinner-border text-warning" role="status"></span>
+      </div>
+    </div>
+
+    <div class="result content-box" *ngIf="hasResult">
+      <span class="result-title">
+        <span class="lead">AI Response</span>
+      </span>
+      <p class="result-box" [innerHTML]="streamText"></p>
+      <div class="source-docs" *ngIf="isInQAMode">
+        <span class="source-docs-header">
+          <span class="lead">Source Documents</span>
+          <span class="badge bg-info text-dark">{{sourceDocs.length}}</span>
+        </span>
+        <ul class="document-list">
+          <li class="document-details" *ngFor="let doc of sourceDocs" [title]="doc.title">
+            <span class="badge bg-secondary">Doc{{doc?.doc_id}}</span>
+            <span class="doc-title">
+              {{ (doc.title.length > 70) ? (doc.title | slice:0:70) : (doc.title) }} ...</span>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- <div class="prompt">
+    <textarea class="form-control prompt-input" placeholder="Enter prompt" [disabled]="isInTranstion"
+      [(ngModel)]="promptText" rows="1" (keydown.enter)="getAnswer()"></textarea>
+
+    <span class="btn-span">
+      <button class="btn btn-secondary submit-btn" type="button" (click)="getAnswer()" [disabled]="isInTranstion">
+        <span *ngIf="!isInTranstion" class="button-content">
+          <i class="fa-solid fa-arrow-up-long"></i>
+        </span>
+        <span *ngIf="isInTranstion" class="button-content">
+          <i class="fa-solid fa-spinner fa-spin-pulse"></i>
+        </span>
+      </button>
+    </span> 
+  </div> -->
+
+  <!-- <div class="mode-dropdown">
+    <span class="lead">Current Mode: </span>
+    <div ngbDropdown class="d-inline-block">
+      <button type="button" class="btn btn-outline-secondary" id="llm-mode" ngbDropdownToggle>
+        {{selectedMode}}
+      </button>
+      <div ngbDropdownMenu aria-labelledby="llm-mode" class="dropdown-menu dropdown-menu-dark">
+        <button ngbDropdownItem *ngFor="let mode of llmModes | keyvalue"
+          (click)="changeMode(mode.key)">{{mode.value}}</button>
+      </div>
+    </div>
+  </div> -->
+ <!-- Toggle Switches -->
+
+ 
+
+  
+
+</div>
