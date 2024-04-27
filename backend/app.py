@@ -4,6 +4,8 @@ import pickle
 from markupsafe import escape
 from constants import app_constant as constants
 from flask import Flask, send_from_directory, request, jsonify
+from flask_cors import CORS, cross_origin
+
 
 from langchain.vectorstores import Chroma
 from langchain.embeddings import HuggingFaceEmbeddings
@@ -13,6 +15,7 @@ login("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")
 
 
 app = Flask(__name__)
+CORS(app, origins=['http://localhost:4200/'])
 
 @app.after_request
 def after_request(response):
@@ -27,6 +30,7 @@ def favicon():
 
 
 @app.route('/prompt/recommendation', methods=['POST'])
+@cross_origin(supports_credentials=True)
 def generate_recommendation_prompt():
   req = request.json
   question = req['question']
@@ -42,11 +46,13 @@ def generate_qa_prompt():
   question = req['question']
   document_data = find_documents(question)
   prompt = create_qa_prompt(question, document_data)
-  return jsonify({
+  print("Document: ", document_data)
+  print("Prompt: ", prompt)
+  response = jsonify({
     'prompt' : prompt,
     'context': document_data
   })
-
+  return response
 
 # mock api route
 @app.route('/documents', methods=['GET'])
@@ -60,10 +66,16 @@ def get_docs():
 
 @app.route('/qa', methods=['GET'])
 def get_qa():
-  question = "What factors control the ability of palladium cathodes to attain high loading levels?"
+  question = request.args.get('question')
   document_data = find_documents(question)
   prompt = create_qa_prompt(question, document_data)
-  return jsonify({'prompt' : prompt})
+  print("Document: ", document_data)
+  print("Prompt: ", prompt)
+  response = jsonify({
+    'prompt' : prompt,
+    'context': document_data
+  })
+  return response
 
 
 # @app.route("/data", methods=['POST'])
@@ -90,10 +102,9 @@ def get_qa():
 
 
 def find_documents(question):
-
-  persist_directory = constants.app_constant['persist_directory']
-  embedding_model = constants.app_constant['embedding_model']
-  dir = os.path.abspath(os.path.join(os.path.dirname( __file__ ), '..', persist_directory))
+  persist_directory = constants['persist_directory']
+  embedding_model = constants['embedding_model']
+  dir = os.path.abspath(os.path.join(os.path.dirname( __file__ ), '.', persist_directory))
   embeddings = HuggingFaceEmbeddings(model_name=embedding_model)
   vector_db = Chroma(persist_directory=dir, embedding_function=embeddings)
   result_docs = vector_db.similarity_search(question, k=5)
@@ -101,6 +112,7 @@ def find_documents(question):
   docs = []
   doc_count = 0
   for doc in result_docs:
+    print(doc)
     obj = {
       'page_content' : process_text(doc.page_content),
       'metadata': {

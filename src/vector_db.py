@@ -1,21 +1,27 @@
-from langchain_chroma import Chroma
+from langchain.vectorstores import Chroma, FAISS
 from langchain.text_splitter import RecursiveCharacterTextSplitter
-from langchain_community.embeddings import HuggingFaceEmbeddings
-import json
+from langchain.embeddings import HuggingFaceEmbeddings
+import pickle
 
 db = "chroma"
 chunk_size = 512
 chunk_overlap = 20
 
 # Chunking the data
+# Chunking.
 def get_dataset():
-    with open('stockDataset.json', 'rb') as file:
-        docs = json.load(file)
+    with open('abstracts.pkl', 'rb') as file:
+        docs = pickle.load(file)
     return docs
 
+def get_titles():
+    with open('titles.pkl', 'rb') as file:
+        titles = pickle.load(file)
+    return titles
 
 def get_chunks(size, overlap):
     docs = get_dataset()
+    titles = get_titles()
 
     text_splitter = RecursiveCharacterTextSplitter(
         chunk_size=size,
@@ -24,13 +30,12 @@ def get_chunks(size, overlap):
     )
 
     chunks = []
-    for data in docs:
-        subset = text_splitter.create_documents([data["abstract"]])
+    for id, text in enumerate(docs):
+        subset = text_splitter.create_documents([text])
         for chunk in subset:
-            chunk.metadata={"doc_id": data["index"], "title": data["title"]}
+            chunk.metadata={"doc_id": id+1, "title": titles[id]}
         chunks += subset
-    
-    print(chunks[0])
+
     return chunks
 
 ## vector db creation
@@ -41,13 +46,22 @@ print(f"number of chunks {len(chunks)}")
 def save_vector_db(db):
     if db == "chroma":
         print("creating chroma db ....")
-        persist_directory = 'chroma_db/'
+        persist_directory = '../chroma_db/'
         embedding = HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2")
         vectordb = Chroma.from_documents(
             documents=chunks,
             embedding=embedding,
             persist_directory=persist_directory
         )
+    elif db == "faiss":
+        print("creating FAISS db ....")
+        persist_directory = '../faiss_db/'
+        embeddings = HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2")
+        vectordb = FAISS.from_documents(
+            documents=chunks,
+            embedding=embeddings
+        )
+        vectordb.save_local(persist_directory)
     else:
         raise ValueError(f"Cannot identify database - {db}")
 
