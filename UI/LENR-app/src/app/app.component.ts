@@ -63,6 +63,7 @@ export class AppComponent {
     } else {
       this.isFetchingDocs = true;
       const request = this.selectedMode == LLM_MODES.recommendation ? this.getRecommendation() : this.getQAResponse();
+      console.log(request);
       request.pipe(
         map((data) => {
           this.isFetchingDocs = false;
@@ -77,7 +78,7 @@ export class AppComponent {
              * This is a debug code line
              * Uncomment it to check the output of the DB Server
              */
-            // this.streamText = this.utils.processStreamData(prepared_prompt);
+            //this.streamText = this.utils.processStreamData(prepared_prompt);
           }, error: (err) => {
             console.error("Error from DB call", err);
             this.isFetchingDocs = false;

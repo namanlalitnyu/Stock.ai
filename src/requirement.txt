@@ -1,0 +1,8 @@
+PyPDF2
+pdfminer.six
+nltk
+langchain
+chromadb
+tiktoken
+sentence-transformers
+langchain-community
