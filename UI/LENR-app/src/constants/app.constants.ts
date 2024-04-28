@@ -3,5 +3,5 @@ export const APP_CONSTANTS = {
     'dbServer': 'http://127.0.0.1:5000',
     'darkTheme': 'dark',
     'lightTheme': 'light',
-    'openAIKey': 'sk-proj-V3vCVBgM5H0fwruTYgALT3BlbkFJyrApYkgyic7Wwf5mKW6Z'
+    'openAIKey': 'test'
 }
