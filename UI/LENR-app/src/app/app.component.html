@@ -94,7 +94,7 @@
           <li class="document-details" *ngFor="let doc of sourceDocs" [title]="doc.title">
             <span class="badge bg-secondary">Doc{{doc?.doc_id}}</span>
             <span class="doc-title">
-              {{ (doc.title.length > 70) ? (doc.title | slice:0:70) : (doc.title) }} ...</span>
+              {{ (doc.title.length > 120) ? (doc.title | slice:0:120) : (doc.title) }} ...</span>
           </li>
         </ul>
       </div>
