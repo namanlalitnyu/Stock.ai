@@ -37,7 +37,8 @@ def generate_recommendation_prompt():
   documents = get_documents_with_abstracts(document_data)
   prompt = create_recommendation_prompt(question, documents)
   return jsonify({
-    'prompt' : prompt
+    'prompt' : prompt,
+    'context': documents
   })
 
 
@@ -81,36 +82,17 @@ def find_documents(question):
   
   return data
 
-def get_abstracts(document_data):
-  candidates = {}
-  for doc in document_data['documents']:
-      md = (doc['metadata'])
-      candidates[md['doc_id']] = 1
-  
-  dir = os.path.abspath(os.path.join(os.path.dirname( __file__ ), '..', 'src', 'abstracts.pkl'))
-  with open(dir, 'rb') as file:
-    abstracts = pickle.load(file)
-  
-  candidate_abstracts = ""
-  for id in candidates:
-    processed_abstract = abstracts[id - 1][0:300]
-    processed_abstract = process_text(processed_abstract)
-    candidate_abstracts += f"\n\n Doc{id}.pdf: {processed_abstract};"
-  
-  return candidate_abstracts
-
-
 def get_documents_with_abstracts(document_data):
   finalDocuments = []
-  file_path = os.path.abspath(os.path.join('..', 'compute', 'stockDataset.json'))
-  with open(file_path, 'rb') as file:
+  with open('stockDataset.json', 'rb') as file:
     dataset = json.load(file)
   
   for doc in document_data['documents']:
     docObject = {
       'doc_id': doc['metadata']['doc_id'],
       'title': doc['metadata']['title'],
-      'abstract': dataset[doc['metadata']['doc_id']-1]['abstract']
+      'abstract': dataset[doc['metadata']['doc_id']-1]['abstract'],
+      'link': dataset[doc['metadata']['doc_id']-1]['link']
     }
     finalDocuments.append(docObject)
   
@@ -124,8 +106,9 @@ def process_text(text):
 
 def create_qa_prompt(question, context):
   prompt = f"""Use the following pieces of articles to answer the question at the end.
-    For each article, you are provided with the docId, title and the page content.
-    If you don't know the answer, just say that you don't know, don't try to make up an answer. Keep the answer as concise as possible.
+    For each article, you are provided with the docId, title and its page content. You need to use the information of the title and the page content for your response.
+    If you have any prior information about that article, you can use that in framing the answer.
+    If you don't know the answer, just say that you don't know, don't try to make up an answer. Keep the answer as meaningful as possible.
   """
   prompt_2 = ""
   for doc in context['documents']:
@@ -145,8 +128,8 @@ def create_recommendation_prompt(question, documents):
   prompt = f"""You are a recommendation system which recommends why certain papers are referred based on search. You are given the following things:
     1. The question asked by the user 
     2. The top 3 best papers relevant to the user question and for each paper, you are given its docId, title, and abstract.
-    Return a brief summary of the answer to the user's question.
-    Along with this, In bulleted list, return only the titles of the top 3 papers to the user in proper format and also recommend very briefly, why each of these papers is relevant to the question asked by the user.
+    Return a brief summary of the user's question based on the research papers provided and their corresponding title and abstract.
+    Along with this, also state why each of these papers is relevant to the question asked by the user.
     User Question: {question}
     Papers:
     """

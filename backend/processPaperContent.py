@@ -6,8 +6,8 @@ client = arxiv.Client()
 
 # Search for the 10 most recent articles matching the keyword "quantum."
 search = arxiv.Search(
-  query = "%28ti:stock AND ti:price%29 OR %28ti:stock AND ti:market%29 OR %28ti:stock AND ti:prediction%29 OR %28ti:stock AND ti:trend%29 OR %28ti:stock AND ti:forecasting%29",
-  max_results = 500,
+  query = "%28ti:stock%29 OR %28ti:stock AND ti:price%29 OR %28ti:stock AND ti:market%29 OR %28ti:stock AND ti:prediction%29 OR %28ti:stock AND ti:trend%29 OR %28ti:stock AND ti:forecasting%29",
+  max_results = 1000,
   sort_by = arxiv.SortCriterion.SubmittedDate
 )
 
@@ -20,7 +20,8 @@ for r in results:
   document = {
     'index': doc_index,
     'title': r.title,
-    'abstract': r.summary.replace('\n', ' ')
+    'abstract': r.summary.replace('\n', ' '),
+    'link': str(r.links[0])
   }
   documentList.append(document)
   doc_index += 1
