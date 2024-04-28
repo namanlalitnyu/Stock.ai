@@ -1,0 +1,28 @@
+version: '3.8'
+
+services:
+  frontend:
+    build:
+      context: ./UI  # Ensure this directory contains the Dockerfile and necessary app files for frontend
+      dockerfile: Dockerfile
+    ports:
+      - "8080:80"  # Expose port 80 on the host and map to port 80 in the container
+    volumes:
+      - ./UI:/stockai-app  # Mount the host directory to the container for development
+    networks:
+      - app-network
+
+  backend:
+    build:
+      context: ./backend  # Ensure this directory contains the Dockerfile and necessary app files for backend
+      dockerfile: Dockerfile
+    ports:
+      - "5000:5000"  # Expose port 5000 on the host and map to port 5000 in the container
+    volumes:
+      - ./backend:/backend  # Mount the host directory to the container for development
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
