@@ -38,7 +38,7 @@ def generate_recommendation_prompt():
   prompt = create_recommendation_prompt(question, documents)
   return jsonify({
     'prompt' : prompt,
-    'context': documents
+    'documentList': documents
   })
 
 
@@ -62,6 +62,9 @@ def find_documents(question):
   vector_db = Chroma(persist_directory=dir, embedding_function=embeddings)
   result_docs = vector_db.similarity_search(question, k=3)
 
+  with open('stockDataset.json', 'rb') as file:
+    dataset = json.load(file)
+
   docs = []
   doc_count = 0
   for doc in result_docs:
@@ -69,7 +72,8 @@ def find_documents(question):
       'page_content' : process_text(doc.page_content),
       'metadata': {
         'doc_id': doc.metadata['doc_id'],
-        'title' : process_text(doc.metadata['title'])
+        'title' : process_text(doc.metadata['title']),
+        'link': dataset[doc.metadata['doc_id']-1]['link']
       }
     }
     docs.append(obj)

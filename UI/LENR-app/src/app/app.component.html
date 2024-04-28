@@ -27,12 +27,12 @@
       <span class="lead interaction">Interaction Style:</span>
       <div class="toggle-switch">
         <input type="radio" id="modeQA"  name="mode" (change)="changeMode('qa')" [checked]="selectedMode === 'Question Answering'">
-        <label for="modeQA">QA</label>
+        <label for="modeQA">Ask Us</label>
         <div class="toggle-slider"></div>
       </div>
       <div class="toggle-switch ">
         <input type="radio" id="modeRaw" name="mode" (change)="changeMode('rawLLM')" [checked]="selectedMode === 'Raw LLM'">
-        <label for="modeRaw" >LLM</label>
+        <label for="modeRaw" >Ask LLM</label>
         <div class="toggle-slider"></div>
       </div>
       <div class="toggle-switch">
@@ -46,7 +46,7 @@
     <br>
 
     <div class="prompt">
-      <textarea class="form-control prompt-input" placeholder="Enter prompt" [disabled]="isInTranstion"
+      <textarea class="form-control prompt-input" placeholder="Enter your query...." [disabled]="isInTranstion"
         [(ngModel)]="promptText" rows="1" (keydown.enter)="getAnswer()"></textarea>
   
       <span class="btn-span">
@@ -82,17 +82,17 @@
 
     <div class="result content-box" *ngIf="hasResult">
       <span class="result-title">
-        <span class="lead">AI Response</span>
+        <span class="lead">Summary</span>
       </span>
       <p class="result-box" [innerHTML]="streamText"></p>
       <div class="source-docs" *ngIf="isInQAMode">
         <span class="source-docs-header">
-          <span class="lead">Source Documents</span>
+          <span class="lead">Most Relevant Documents</span>
           <span class="badge bg-info text-dark">{{sourceDocs.length}}</span>
         </span>
         <ul class="document-list">
           <li class="document-details" *ngFor="let doc of sourceDocs" [title]="doc.title">
-            <span class="badge bg-secondary">Doc{{doc?.doc_id}}</span>
+            <span class="badge bg-secondary">{{doc?.link}}</span>
             <span class="doc-title">
               {{ (doc.title.length > 120) ? (doc.title | slice:0:120) : (doc.title) }} ...</span>
           </li>

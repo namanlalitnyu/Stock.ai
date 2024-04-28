@@ -56,7 +56,7 @@ export class AppComponent {
   }
 
   get isInQAMode(): boolean {
-    return this.selectedMode === this.llmModes.qa && this.hasQAResult;
+    return this.hasQAResult;
   }
 
   getAnswer(): void {
@@ -69,13 +69,11 @@ export class AppComponent {
       try {
         let prepared_prompt = this.getPromptForLLM(this.promptText);
         this.isLoading = true;
-        console.log("Prompt for GPT: ", prepared_prompt);
         this.openai.chat.completions.create({
             model: "gpt-3.5-turbo-0125",
             messages: [{ role: 'user', content: prepared_prompt}],
             max_tokens: 200
         }).then((result) => {
-          console.log("Result: ", result);
           this.streamText = result.choices[0].message.content || '';
           this.isLoading = false;
         });
@@ -84,9 +82,6 @@ export class AppComponent {
         this.hasError = true;
         this.errorMessage = "Error in processing GPT result";
       }
-
-
-
     } else {
       this.isFetchingDocs = true;
       const request = this.selectedMode == LLM_MODES.recommendation ? this.getRecommendation() : this.getQAResponse();
@@ -95,6 +90,9 @@ export class AppComponent {
           this.isFetchingDocs = false;
           if (data.context && data.context.doc_count > 0) {
             this.sourceDocs = data.context.documents.map((doc: any) => doc.metadata);
+          }
+          else if (data.documentList) {
+            this.sourceDocs = data.documentList;
           }
           return data.prompt;
         })).subscribe({
@@ -107,7 +105,6 @@ export class AppComponent {
                   messages: [{ role: 'user', content: prepared_prompt}],
                   max_tokens: this.selectedMode == LLM_MODES.recommendation ?  800 : 200 
               }).then((result) => {
-                console.log("Result: ", result);
                 this.streamText = result.choices[0].message.content || '';
                 this.isLoading = false;
               });
@@ -132,6 +129,7 @@ export class AppComponent {
   }
 
   private getRecommendation(): Observable<any> {
+    this.hasQAResult = true;
     return this.db.getRecommendationPrompt(this.promptText);
   }
   
