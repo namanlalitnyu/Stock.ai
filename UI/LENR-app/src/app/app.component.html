@@ -1,6 +1,10 @@
+<head>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+</head>
+<body>
 <div class="body-content">
-  <span class="header">
-    <span class="title display-4">{{ title }}</span>
+  <span class="header ">
+    <span class="title display-4 stock-ai-title">{{ title }}</span>
     <!-- <span class="mode-dropdown">
       <span class="lead">Current Mode: </span>
       <div ngbDropdown class="d-inline-block">
@@ -13,6 +17,7 @@
         </div>
       </div>
     </span> -->
+    <i class="fa-solid fa-money-bill-trend-up fa-bounce fa-2xl icon-position" style="color: #B197FC;"></i>
   </span>
 
 
@@ -27,12 +32,12 @@
       <span class="lead interaction">Interaction Style:</span>
       <div class="toggle-switch">
         <input type="radio" id="modeQA"  name="mode" (change)="changeMode('qa')" [checked]="selectedMode === 'Question Answering'">
-        <label for="modeQA">Ask Us</label>
+        <label for="modeQA">QA</label>
         <div class="toggle-slider"></div>
       </div>
       <div class="toggle-switch ">
         <input type="radio" id="modeRaw" name="mode" (change)="changeMode('rawLLM')" [checked]="selectedMode === 'Raw LLM'">
-        <label for="modeRaw" >Ask LLM</label>
+        <label for="modeRaw" >LLM</label>
         <div class="toggle-slider"></div>
       </div>
       <div class="toggle-switch">
@@ -46,7 +51,7 @@
     <br>
 
     <div class="prompt">
-      <textarea class="form-control prompt-input" placeholder="Enter your query...." [disabled]="isInTranstion"
+      <textarea class="form-control prompt-input" placeholder="Enter prompt" [disabled]="isInTranstion"
         [(ngModel)]="promptText" rows="1" (keydown.enter)="getAnswer()"></textarea>
   
       <span class="btn-span">
@@ -82,17 +87,17 @@
 
     <div class="result content-box" *ngIf="hasResult">
       <span class="result-title">
-        <span class="lead">Summary</span>
+        <span class="lead">AI Response</span>
       </span>
       <p class="result-box" [innerHTML]="streamText"></p>
       <div class="source-docs" *ngIf="isInQAMode">
         <span class="source-docs-header">
-          <span class="lead">Most Relevant Documents</span>
+          <span class="lead">Source Documents</span>
           <span class="badge bg-info text-dark">{{sourceDocs.length}}</span>
         </span>
         <ul class="document-list">
           <li class="document-details" *ngFor="let doc of sourceDocs" [title]="doc.title">
-            <span class="badge bg-secondary">{{doc?.link}}</span>
+            <span class="badge bg-secondary">Doc{{doc?.doc_id}}</span>
             <span class="doc-title">
               {{ (doc.title.length > 120) ? (doc.title | slice:0:120) : (doc.title) }} ...</span>
           </li>
@@ -137,3 +142,4 @@
   
 
 </div>
+</body>

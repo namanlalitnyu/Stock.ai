@@ -1,15 +1,48 @@
+/* Adding dark gradient and shadow to the text */
+.stock-ai-title {
+    font-size: 3em; /* Adjust size as needed */
+    background: -webkit-linear-gradient(left, #0f2027 0%, #203a43 50%, #2c5364 100%);
+    background: linear-gradient(to right, #0f2027 0%, #203a43 50%, #2c5364 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-shadow: 0 0 10px #2c5364, 0 0 20px #203a43;
+  }
+  
+  /* Apply the above styles to the specific element */
+.stock-ai-title:hover {
+    text-shadow: 0 0 20px #2c5364, 0 0 30px #203a43;
+    transition: text-shadow 0.5s ease-in-out;
+  }
+  
 .body-content {
     display: flex;
     flex-direction: column;
     background:blue($color: #000000);
 }
 
+// .header {
+//     display: flex;
+//     align-items: center;
+//     justify-content: space-between;
+//     padding: 1em;
+//     background: #ffc107;//var(--bs-body-color);
+// }
+
 .header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 1em;
-    background: #ffc107;//var(--bs-body-color);
+    background: linear-gradient(to right, #ffecd2 0%, #f8c200 100%);
+    transition: background 0.5s ease-in-out;
+    min-height: 80px; /* Or whatever minimum height you prefer */
+  }
+  
+  /* Interactive hover effect for the container background */
+.header:hover {
+    background: linear-gradient(to right, #ffecd2 0%, #f2994a 100%);
+  }
+
+.icon-position{
+  //display: flex;
+  justify-content: flex-end;
 }
 
 .mode-dropdown {
