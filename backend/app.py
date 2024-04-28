@@ -1,8 +1,6 @@
 import os
-import pickle
 import json
 
-from markupsafe import escape
 from constants import app_constant as constants
 from flask import Flask, send_from_directory, request, jsonify
 from flask_cors import CORS, cross_origin
@@ -16,7 +14,7 @@ login("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")
 
 
 app = Flask(__name__)
-CORS(app, origins=['http://localhost:4200/'])
+CORS(app, origins=['http://localhost:4200/', 'http://localhost:8080/'])
 
 @app.after_request
 def after_request(response):
@@ -147,4 +145,4 @@ def create_recommendation_prompt(question, documents):
   return prompt + documentsPrompt
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, host='0.0.0.0')
