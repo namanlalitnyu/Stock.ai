@@ -7,6 +7,8 @@ import { Observable, map } from 'rxjs';
 import { APP_CONSTANTS } from '../constants/app.constants';
 import { DBService } from '../services/db.service';
 import { UtilsService } from '../services/utils.service';
+import { ChatService } from '../services/chatgpt.service';
+import OpenAI from 'openai';
 
 export const LLM_MODES = {
   recommendation: "Recommendation System",
@@ -36,9 +38,14 @@ export class AppComponent {
   public hasQAResult: boolean = false;
   public errorMessage: string = "";
 
-  constructor(private db: DBService, private utils: UtilsService) {
+  constructor(private db: DBService, private utils: UtilsService, private chat: ChatService) {
     this.isPristine = true;
   }
+
+  private openai = new OpenAI({
+    apiKey: APP_CONSTANTS.openAIKey,
+    dangerouslyAllowBrowser: true
+  });
 
   get isInTranstion(): boolean {
     return this.isFetchingDocs || this.isLoading;
@@ -59,11 +66,30 @@ export class AppComponent {
     this.hasQAResult = false;
 
     if (this.selectedMode == LLM_MODES.rawLLM) {
-      this.getStream(this.promptText);
+      try {
+        let prepared_prompt = this.getPromptForLLM(this.promptText);
+        this.isLoading = true;
+        console.log("Prompt for GPT: ", prepared_prompt);
+        this.openai.chat.completions.create({
+            model: "gpt-3.5-turbo-0125",
+            messages: [{ role: 'user', content: prepared_prompt}],
+            max_tokens: 200
+        }).then((result) => {
+          console.log("Result: ", result);
+          this.streamText = result.choices[0].message.content || '';
+          this.isLoading = false;
+        });
+      } catch (error) {
+        console.error("Error processing GPT result", error);
+        this.hasError = true;
+        this.errorMessage = "Error in processing GPT result";
+      }
+
+
+
     } else {
       this.isFetchingDocs = true;
       const request = this.selectedMode == LLM_MODES.recommendation ? this.getRecommendation() : this.getQAResponse();
-      console.log(request);
       request.pipe(
         map((data) => {
           this.isFetchingDocs = false;
@@ -72,13 +98,24 @@ export class AppComponent {
           }
           return data.prompt;
         })).subscribe({
-          next: (prepared_prompt: string) => {
-            this.getStream(prepared_prompt);
-            /**
-             * This is a debug code line
-             * Uncomment it to check the output of the DB Server
-             */
-            //this.streamText = this.utils.processStreamData(prepared_prompt);
+          next: async (prepared_prompt: string) => {
+            try {
+              this.isLoading = true;
+              console.log("Prompt for GPT: ", prepared_prompt);
+              this.openai.chat.completions.create({
+                  model: "gpt-3.5-turbo-0125",
+                  messages: [{ role: 'user', content: prepared_prompt}],
+                  max_tokens: this.selectedMode == LLM_MODES.recommendation ?  800 : 200 
+              }).then((result) => {
+                console.log("Result: ", result);
+                this.streamText = result.choices[0].message.content || '';
+                this.isLoading = false;
+              });
+            } catch (error) {
+              console.error("Error processing GPT result", error);
+              this.hasError = true;
+              this.errorMessage = "Error in processing GPT result";
+            }
           }, error: (err) => {
             console.error("Error from DB call", err);
             this.isFetchingDocs = false;
@@ -97,57 +134,16 @@ export class AppComponent {
   private getRecommendation(): Observable<any> {
     return this.db.getRecommendationPrompt(this.promptText);
   }
-
-  private async getStream(prepared_prompt: string) {
-    this.isLoading = true;
-
-    try {
-      let response = await fetch(APP_CONSTANTS.cppServer + "/completion", {
-        method: 'POST',
-        body: JSON.stringify({
-          prompt: prepared_prompt,
-          n_predict: 1024,
-          stream: true,
-        })
-      })
-
-      if (response.status !== 200) {
-        throw new Error('Fetch request failed',);
-      }
-
-      const reader = response.body?.pipeThrough(new TextDecoderStream()).getReader();
-
-      while (true) {
-        const data = await reader?.read();
-
-        let lastLine = data?.value?.split(/\r?\n/);
-        let last_array = lastLine?.filter(e => e != '');
-
-        let stop = false;
-        last_array?.forEach((str) => {
-          this.isLoading = false;
-          this.streamText += this.utils.processStreamData(JSON.parse(str).content);
-          if (JSON.parse(str)?.stop) {
-            stop = true;
-          }
-        });
-
-        if (stop) {
-          this.isLoading = false;
-          break;
-        }
-      }
-
-    } catch (error) {
-      this.isLoading = false;
-      this.hasError = true;
-      this.errorMessage = "Error in fetching the LLM data";
-    }
-  }
-
+  
   public changeMode(mode: any) {
     if (mode && this.llmModes[mode]) {
       this.selectedMode = this.llmModes[mode];
     }
+  }
+
+  public getPromptForLLM(prompt:string){
+    let completedQuestion = "Return a concised response in less than 200 words."
+    prompt = prompt + completedQuestion;
+    return prompt;
   }
 }

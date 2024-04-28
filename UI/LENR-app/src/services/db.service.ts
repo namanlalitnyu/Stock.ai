@@ -10,15 +10,14 @@ export class DBService {
     constructor(private http: HttpClient) { }
 
     public getRecommendationPrompt(question: string): Observable<any> {
-        const url = APP_CONSTANTS.dbServer + '/prompt/recommendation';
-
-        return this.http.post(url, { question: question });
+        const url = APP_CONSTANTS.dbServer + '/recommendation';
+        return this.http.get(url,{
+            params: new HttpParams().set('question', question)
+        });
     }
 
     public getQAPrompt(question: string): Observable<any> {
         const url = APP_CONSTANTS.dbServer + '/qa';
-
-        // return this.http.post(url, { question: question });
         return this.http.get(url,{
             params: new HttpParams().set('question', question)
         });

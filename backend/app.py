@@ -1,5 +1,6 @@
 import os
 import pickle
+import json
 
 from markupsafe import escape
 from constants import app_constant as constants
@@ -29,39 +30,15 @@ def favicon():
     return send_from_directory(os.path.join(app.root_path, 'static'), 'favicon.ico', mimetype='image/vnd.microsoft.icon')
 
 
-@app.route('/prompt/recommendation', methods=['POST'])
-@cross_origin(supports_credentials=True)
+@app.route('/recommendation', methods=['GET'])
 def generate_recommendation_prompt():
-  req = request.json
-  question = req['question']
+  question = request.args.get('question')
   document_data = find_documents(question)
-  abstracts = get_abstracts(document_data)
-  prompt = create_recommendation_prompt(question, abstracts)
-  return jsonify({'prompt' : prompt})
-
-
-@app.route('/prompt/qa', methods=['POST'])
-def generate_qa_prompt():
-  req = request.json
-  question = req['question']
-  document_data = find_documents(question)
-  prompt = create_qa_prompt(question, document_data)
-  print("Document: ", document_data)
-  print("Prompt: ", prompt)
-  response = jsonify({
-    'prompt' : prompt,
-    'context': document_data
+  documents = get_documents_with_abstracts(document_data)
+  prompt = create_recommendation_prompt(question, documents)
+  return jsonify({
+    'prompt' : prompt
   })
-  return response
-
-# mock api route
-@app.route('/documents', methods=['GET'])
-def get_docs():
-  question = "What factors control the ability of palladium cathodes to attain high loading levels?"
-  document_data = find_documents(question)
-  abstracts = get_abstracts(document_data)
-  prompt = create_recommendation_prompt(question, abstracts)
-  return jsonify({'prompt' : prompt})
 
 
 @app.route('/qa', methods=['GET'])
@@ -69,36 +46,11 @@ def get_qa():
   question = request.args.get('question')
   document_data = find_documents(question)
   prompt = create_qa_prompt(question, document_data)
-  print("Document: ", document_data)
-  print("Prompt: ", prompt)
   response = jsonify({
     'prompt' : prompt,
     'context': document_data
   })
   return response
-
-
-# @app.route("/data", methods=['POST'])
-# def data():
-#     server = constants.app_constant['cpp_server']
-#     url = server + "/completion"
-    
-#     prompt_text = request.json['prompt']
-#     print(prompt_text)
-#     data =  {
-#         "prompt": prompt_text,
-#         "n_predict": 1024,
-#         "stream": True
-#     }
-#     headers = {'Content-type': 'application/json'}
-#     response = requests.post(url, data=json.dumps(data), headers=headers, stream=True)
-    
-#     def stream():
-#         for chunk in response.iter_content(chunk_size=10):
-#             print(chunk)
-#             yield chunk
-
-#     return stream()
 
 
 def find_documents(question):
@@ -107,12 +59,11 @@ def find_documents(question):
   dir = os.path.abspath(os.path.join(os.path.dirname( __file__ ), '.', persist_directory))
   embeddings = HuggingFaceEmbeddings(model_name=embedding_model)
   vector_db = Chroma(persist_directory=dir, embedding_function=embeddings)
-  result_docs = vector_db.similarity_search(question, k=5)
+  result_docs = vector_db.similarity_search(question, k=3)
 
   docs = []
   doc_count = 0
   for doc in result_docs:
-    print(doc)
     obj = {
       'page_content' : process_text(doc.page_content),
       'metadata': {
@@ -148,6 +99,23 @@ def get_abstracts(document_data):
   
   return candidate_abstracts
 
+
+def get_documents_with_abstracts(document_data):
+  finalDocuments = []
+  file_path = os.path.abspath(os.path.join('..', 'compute', 'stockDataset.json'))
+  with open(file_path, 'rb') as file:
+    dataset = json.load(file)
+  
+  for doc in document_data['documents']:
+    docObject = {
+      'doc_id': doc['metadata']['doc_id'],
+      'title': doc['metadata']['title'],
+      'abstract': dataset[doc['metadata']['doc_id']-1]['abstract']
+    }
+    finalDocuments.append(docObject)
+  
+  return finalDocuments
+
 def process_text(text):
   processed_text = text.replace('\n','')
   processed_text = processed_text.replace('\t','')
@@ -155,25 +123,41 @@ def process_text(text):
   return processed_text
 
 def create_qa_prompt(question, context):
-  prompt = f""" [INST] Use the following pieces of context to answer the question at the end.
+  prompt = f"""Use the following pieces of articles to answer the question at the end.
+    For each article, you are provided with the docId, title and the page content.
     If you don't know the answer, just say that you don't know, don't try to make up an answer. Keep the answer as concise as possible.
-    Context: {context}
-    Question: {question}
-    Helpful Answer:
   """
-  return prompt
-
-
-def create_recommendation_prompt(question, abstracts):
-  prompt = f""" [INST] You are a recommendation system which recommends papers based on search. Given below are the following.
-    1. The prompt from user 
-    2. The candidate papers and its incomplete abstract seperated by semicolon.
-    Give recommendation of top 3 papers and insights about these candidates for future research.
-    User prompt: {question} 
-    Candidates: {abstracts} 
-    [/INST]
+  prompt_2 = ""
+  for doc in context['documents']:
+    prompt_2 += f"""DocId: {doc['metadata']['doc_id']}
+    Title: {doc['metadata']['title']}
+    Page Content: {doc['page_content']}
     """
-  return prompt
+  
+  questionPrompt = f"""
+    Question: {question}
+    Helpful Answer: 
+    """
+  finalPrompt = prompt + prompt_2 + questionPrompt
+  return finalPrompt
+
+def create_recommendation_prompt(question, documents):
+  prompt = f"""You are a recommendation system which recommends why certain papers are referred based on search. You are given the following things:
+    1. The question asked by the user 
+    2. The top 3 best papers relevant to the user question and for each paper, you are given its docId, title, and abstract.
+    Return a brief summary of the answer to the user's question.
+    Along with this, In bulleted list, return only the titles of the top 3 papers to the user in proper format and also recommend very briefly, why each of these papers is relevant to the question asked by the user.
+    User Question: {question}
+    Papers:
+    """
+  
+  documentsPrompt = ""
+  for doc in documents:
+    documentsPrompt += f"""DocId: {doc['doc_id']}
+    Title: {doc['title']}
+    Abstract: {doc['abstract']}
+    """
+  return prompt + documentsPrompt
 
 if __name__ == '__main__':
     app.run(debug=True)
