@@ -1,43 +1,39 @@
-/* Adding dark gradient and shadow to the text */
 .stock-ai-title {
-    font-size: 3em; /* Adjust size as needed */
-    background: -webkit-linear-gradient(left, #0f2027 0%, #203a43 50%, #2c5364 100%);
-    background: linear-gradient(to right, #0f2027 0%, #203a43 50%, #2c5364 100%);
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
-    text-shadow: 0 0 10px #2c5364, 0 0 20px #203a43;
-  }
-  
+  font-size: 3rem;
+  color: #21ce99; /* Bright green for growth and positivity */
+  margin-left: auto; /* Pushes title to the left */
+}
+
   /* Apply the above styles to the specific element */
 .stock-ai-title:hover {
-    text-shadow: 0 0 20px #2c5364, 0 0 30px #203a43;
-    transition: text-shadow 0.5s ease-in-out;
-  }
+  text-shadow: 0 0 20px #2c5364, 0 0 30px #203a43;
+  transition: text-shadow 0.5s ease-in-out;
+}
+
+.logo {
+  color: #21ce99; /* Bright green to match the title */
+  font-size: 2.5rem;
+  margin-right: 20px; /* Space between logo and the edge */
+}
   
 .body-content {
     display: flex;
     flex-direction: column;
-    background:blue($color: #000000);
+    background-color: #0e1e25; /* Dark navy blue for a sleek look */
+    color: white; /* White text for contrast */
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* A modern font */
+    height: 100vh; /* Full view height */
+    align-items: center; /* Center content horizontally */
 }
 
-// .header {
-//     display: flex;
-//     align-items: center;
-//     justify-content: space-between;
-//     padding: 1em;
-//     background: #ffc107;//var(--bs-body-color);
-// }
-
 .header {
-    background: linear-gradient(to right, #ffecd2 0%, #f8c200 100%);
-    transition: background 0.5s ease-in-out;
-    min-height: 80px; /* Or whatever minimum height you prefer */
-  }
-  
-  /* Interactive hover effect for the container background */
-.header:hover {
-    background: linear-gradient(to right, #ffecd2 0%, #f2994a 100%);
+    display: flex;
+    justify-content: flex-end; /* Logo on the right */
+    align-items: center;
+    width: 100%;
+    padding: 20px;
+    background-color: #123456; /* Dark blue for header */
+    box-shadow: 0 2px 5px 0 rgba(0,0,0,0.2); /* Subtle shadow for depth */
   }
 
 .icon-position{
@@ -232,7 +228,7 @@
     bottom: 0;
     left: 0;
     right: 0;
-    background-color: #ccc;
+    background-color: #204051; /* A calm, dark teal color */
     transition: 0.4s;
     border-radius: 34px;
   }
@@ -244,7 +240,7 @@
     width: 26px;
     left: 4px;
     bottom: 4px;
-    background-color: white;
+    background-color: #2b580c; /* Dark green indicating growth/profit */
     transition: 0.4s;
     border-radius: 50%;
   }
@@ -258,7 +254,7 @@
   
   /* Move the slider to the right on check */
   .toggle-switch input:checked + label + .toggle-slider {
-    background-color: #2196F3;
+    background-color: #21ce99; /* A brighter green for selected toggle */
   }
   
   .toggle-switch input:checked + label + .toggle-slider:before {
@@ -306,7 +302,3 @@
 .interaction{
     color: #ffc107;
 }
-
-
-  
-  /* Tooltip styling */

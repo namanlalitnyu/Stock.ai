@@ -3,33 +3,24 @@
 </head>
 <body>
 <div class="body-content">
-  <span class="header ">
+  <!-- <span class="header ">
     <span class="title display-4 stock-ai-title">{{ title }}</span>
-    <!-- <span class="mode-dropdown">
-      <span class="lead">Current Mode: </span>
-      <div ngbDropdown class="d-inline-block">
-        <button type="button" class="btn btn-outline-secondary" id="llm-mode" ngbDropdownToggle>
-          {{selectedMode}}
-        </button>
-        <div ngbDropdownMenu aria-labelledby="llm-mode" class="dropdown-menu dropdown-menu-dark">
-          <button ngbDropdownItem *ngFor="let mode of llmModes | keyvalue"
-            (click)="changeMode(mode.key)">{{mode.value}}</button>
-        </div>
-      </div>
-    </span> -->
     <i class="fa-solid fa-money-bill-trend-up fa-bounce fa-2xl icon-position" style="color: #B197FC;"></i>
-  </span>
-
-
-  
+  </span> -->
+  <div class="header">
+    <i class="fa-solid fa-money-bill-trend-up fa-bounce fa-2xl logo"></i>
+    <span class="title display-4 stock-ai-title">{{ title }}</span>
+  </div>
   <div class="solution">
-    <!-- <div class="initialize content-box" *ngIf="isPristine">
-      <span class="display-5">How can I help you today?</span>
-    </div> -->
-
-<br>
+    <br>
+    <br>
+    <h2>Welcome to the Stock Marketplace!!</h2>
+    <br>
+    <h4>Ask a question and get the most relevant research papers for your topic</h4>
+    <br>
+    <br>
     <div class="toggle-container">
-      <span class="lead interaction">Interaction Style:</span>
+      <span class="lead interaction">Interact With Us:</span>
       <div class="toggle-switch">
         <input type="radio" id="modeQA"  name="mode" (change)="changeMode('qa')" [checked]="selectedMode === 'Question Answering'">
         <label for="modeQA">Ask Us</label>
@@ -97,7 +88,9 @@
         </span>
         <ul class="document-list">
           <li class="document-details" *ngFor="let doc of sourceDocs" [title]="doc.title">
-            <span class="badge bg-secondary">{{doc?.link}}</span>
+            <a href="{{doc?.link}}" target="_blank" class="badge bg-secondary">
+              {{doc?.link}}
+            </a>
             <span class="doc-title">
               {{ (doc.title.length > 120) ? (doc.title | slice:0:120) : (doc.title) }} ...</span>
           </li>
