@@ -5,9 +5,8 @@ from constants import app_constant as constants
 from flask import Flask, send_from_directory, request, jsonify
 from flask_cors import CORS, cross_origin
 
-
-from langchain.vectorstores import Chroma
-from langchain.embeddings import HuggingFaceEmbeddings
+from langchain_community.vectorstores import Chroma
+from langchain_community.embeddings import HuggingFaceEmbeddings
 
 from huggingface_hub import login
 login("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")
