@@ -17,7 +17,7 @@ services:
       context: ./backend  # Ensure this directory contains the Dockerfile and necessary app files for backend
       dockerfile: Dockerfile
     ports:
-      - "5000:5000"  # Expose port 5000 on the host and map to port 5000 in the container
+      - "3000:3000"  # Expose port 5000 on the host and map to port 5000 in the container
     volumes:
       - ./backend:/backend  # Mount the host directory to the container for development
     networks:
