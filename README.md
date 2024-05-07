@@ -1,4 +1,4 @@
-# Stockmarket.ai
+# Stock.ai
 Retrieval Augmented Generation (RAG) Application, a recommendation system designed specifically for the domain of academic research on stock prediction using Large Language Model (LLM), LangChain, and Prompt Engineering and deployed on Google Cloud using Virtual Machine and Docker.
 
 #### The project offers 3 modes: Question Answer, Recommendation, and LLM interaction
